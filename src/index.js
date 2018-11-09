@@ -3,7 +3,7 @@ let likeURL;
 let commentsURL;
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('%c DOM Content Loaded and Parsed!', 'color: magenta')
+  console.log('%c DOM Content Loaded and Parsed! However I refuse to assign constants!', 'color: magenta')
 
   let imageId = 1379
   //Enter the id from the fetched image here
@@ -14,7 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   commentsURL = `https://randopic.herokuapp.com/comments/`
 
+//document.addEventListener('DOMContentLoaded') fails to set variables as global, therefore I had to manually use the URL to fetch data below.
+
 })
+
+
 const commentText = document.querySelector(`[name='comment']`)
 const imagePlacer = document.querySelector('#image')
 const container = document.querySelector('.container')
@@ -24,7 +28,7 @@ const imageCard = document.querySelector('#image_card')
 const commentList = document.querySelector('#comments')
 
 
-//document.addEventListener('DOMContentLoaded') failed to load, therefore I had to manually use the URL to fetch data below.
+
 
 const getImage = () => fetch(`https://randopic.herokuapp.com/images/1379`).then(resp=>resp.json())
 
@@ -51,33 +55,30 @@ const addToPage = img => {
     commentLoadLi.setAttribute('comment-id',comment.id)
     commentLoadLi.innerHTML = `${comment.content}
     <button class='delete_button' data-id='${comment.id}'>Remove me</button>`
+    // data-id allows to track the comment elements
     commentList.appendChild(commentLoadLi)
   })
 
 
-//delete button functionality
+//remove button functionality
 
-removeButtonArray=document.querySelectorAll('.delete_button')
+removeButtonArray = document.querySelectorAll('.delete_button')
 removeButtonArray.forEach(button=>{
   button.addEventListener('click', ()=>{
-    let commentId = button.dataset.id
     //back end removal:
-    fetch(`https://randopic.herokuapp.com/comments/${commentId}`,{
+    fetch(`https://randopic.herokuapp.com/comments/${button.dataset.id}`,{
       method: 'DELETE'
     }).then(res=>console.log(res))
     //front end removal:
-    commentList.querySelector(`[comment-id='${commentId}']`).remove()
+    commentList.querySelector(`[comment-id='${button.dataset.id}']`).remove()
   })
 })
-
-
-// let deleteButton = imageEl.querySelector()
-// document.querySelector(`[data-id='32286']`)
 
 
 
 // like button functionality
   let likesCounter = imageEl.querySelector('#likes')
+
   likeButton.addEventListener('click', () => {
     event.preventDefault()
     console.log('liked')
@@ -112,12 +113,12 @@ removeButtonArray.forEach(button=>{
       },
       body: JSON.stringify({image_id: 1379, content: commentText.value}) 
     }).then(res=>console.log(res))
-    //DRY to be applied if enough time left???
+
+    //to make the button work I would first shove the comment into the database and then retrieve it back with an ID if I were to set the remove buttom immediately. There must be an easier way, though..
+   
     commentForm.reset()
   //comment event listener end
   })
-
-
 
 
 imageCard.appendChild(imageEl)
@@ -126,8 +127,9 @@ imageCard.appendChild(imageEl)
 
 
 
-
-
-
-//run:
+//run upon page load:
 getImage().then(img=>addToPage(img))
+
+
+
+ //DRY to be applied and functionality split into multiple files if enough time left
