@@ -44,6 +44,13 @@ const addToPage = img => {
     <div class="card col-md-4"></div>
   </div>
   `
+  img.comments.forEach(comment => {
+    commentLoadLi = document.createElement('li')
+    commentLoadLi.innerText = comment.content
+    commentList.appendChild(commentLoadLi)
+  })
+
+
 
   let likesCounter = imageEl.querySelector('#likes')
 
@@ -69,10 +76,25 @@ const addToPage = img => {
   })
   commentForm.addEventListener('submit', () => {
     event.preventDefault()
+    // front end:
     commentLi = document.createElement('li')
     commentLi.innerText = commentText.value
+    commentList.appendChild(commentLi)
+    //back end:
+
+   fetch('https://randopic.herokuapp.com/comments',{
+      method: "POST",
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({image_id: 1379, content: commentText.value}) 
+    }).then(res=>console.log(res))
+    //DRY to be applied if enough time left
+
+  
     commentForm.reset()
-  commentList.appendChild(commentLi)
+
   //comment event listener end
   })
 
