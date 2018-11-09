@@ -31,6 +31,7 @@ const getImage = () => fetch(`https://randopic.herokuapp.com/images/1379`).then(
 
 const addToPage = img => {
   imageEl = document.createElement('div')
+  // appending image info to page
   imageEl.innerHTML = `
   <div class="row" id="image_content">
     <div class="card col-md-4"></div>
@@ -44,16 +45,39 @@ const addToPage = img => {
     <div class="card col-md-4"></div>
   </div>
   `
+// appending comments and adding a remove button
   img.comments.forEach(comment => {
-    commentLoadLi = document.createElement('li')
-    commentLoadLi.innerText = comment.content
+    commentLoadLi = document.createElement('li')  
+    commentLoadLi.setAttribute('comment-id',comment.id)
+    commentLoadLi.innerHTML = `${comment.content}
+    <button class='delete_button' data-id='${comment.id}'>Remove me</button>`
     commentList.appendChild(commentLoadLi)
   })
 
 
+//delete button functionality
 
+removeButtonArray=document.querySelectorAll('.delete_button')
+removeButtonArray.forEach(button=>{
+  button.addEventListener('click', ()=>{
+    let commentId = button.dataset.id
+    //back end removal:
+    fetch(`https://randopic.herokuapp.com/comments/${commentId}`,{
+      method: 'DELETE'
+    }).then(res=>console.log(res))
+    //front end removal:
+    commentList.querySelector(`[comment-id='${commentId}']`).remove()
+  })
+})
+
+
+// let deleteButton = imageEl.querySelector()
+// document.querySelector(`[data-id='32286']`)
+
+
+
+// like button functionality
   let likesCounter = imageEl.querySelector('#likes')
-
   likeButton.addEventListener('click', () => {
     event.preventDefault()
     console.log('liked')
@@ -69,11 +93,10 @@ const addToPage = img => {
       body: JSON.stringify({image_id: 1379, like_count: likesCounter.innerText}) 
     }).then(res=>console.log(res))
 
-
-
-    
     //like event listener end
   })
+
+  //comment form:
   commentForm.addEventListener('submit', () => {
     event.preventDefault()
     // front end:
@@ -81,7 +104,6 @@ const addToPage = img => {
     commentLi.innerText = commentText.value
     commentList.appendChild(commentLi)
     //back end:
-
    fetch('https://randopic.herokuapp.com/comments',{
       method: "POST",
       headers: {
@@ -90,16 +112,10 @@ const addToPage = img => {
       },
       body: JSON.stringify({image_id: 1379, content: commentText.value}) 
     }).then(res=>console.log(res))
-    //DRY to be applied if enough time left
-
-  
+    //DRY to be applied if enough time left???
     commentForm.reset()
-
   //comment event listener end
   })
-
-
-
 
 
 
