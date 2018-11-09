@@ -2,9 +2,6 @@ let imageURL;
 let likeURL;
 let commentsURL;
 
-
-
-
 document.addEventListener('DOMContentLoaded', () => {
   console.log('%c DOM Content Loaded and Parsed!', 'color: magenta')
 
@@ -18,13 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
   commentsURL = `https://randopic.herokuapp.com/comments/`
 
 })
-
+const commentText = document.querySelector(`[name='comment']`)
 const imagePlacer = document.querySelector('#image')
 const container = document.querySelector('.container')
 const likeButton = document.querySelector('#like_button')
 const commentForm = document.querySelector('#comment_form')
 const imageCard = document.querySelector('#image_card')
-
+const commentList = document.querySelector('#comments')
 
 
 //document.addEventListener('DOMContentLoaded') failed to load, therefore I had to manually use the URL to fetch data below.
@@ -43,8 +40,6 @@ const addToPage = img => {
       <span>Likes:
         <span id="likes">${img.like_count}</span>
       </span>
-   
-      </ul>
     </div>
     <div class="card col-md-4"></div>
   </div>
@@ -55,8 +50,35 @@ const addToPage = img => {
   likeButton.addEventListener('click', () => {
     event.preventDefault()
     console.log('liked')
+    //increase likes on the page
     likesCounter.innerText++
+    //increase likes in DB
+    fetch('https://randopic.herokuapp.com/likes',{
+      method: "POST",
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({image_id: 1379, like_count: likesCounter.innerText}) 
+    }).then(res=>console.log(res))
+
+
+
+    
+    //like event listener end
   })
+  commentForm.addEventListener('submit', () => {
+    event.preventDefault()
+    commentLi = document.createElement('li')
+    commentLi.innerText = commentText.value
+    commentForm.reset()
+  commentList.appendChild(commentLi)
+  //comment event listener end
+  })
+
+
+
+
 
 
 
@@ -69,5 +91,5 @@ imageCard.appendChild(imageEl)
 
 
 
-
+//run:
 getImage().then(img=>addToPage(img))
