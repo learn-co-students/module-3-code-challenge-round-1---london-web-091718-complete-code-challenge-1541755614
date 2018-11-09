@@ -1,18 +1,10 @@
 // document.addEventListener('DOMContentLoaded', () => {
 //   console.log('%c DOM Content Loaded and Parsed!', 'color: magenta')
 
-let imageId = '1383'
-//Enter the id from the fetched image here
-
-const imageURL = `https://randopic.herokuapp.com/images/1383`
+const imageURL = `https://randopic.herokuapp.com/images/`
 const likeURL = `https://randopic.herokuapp.com/likes/`
 const commentsURL = `https://randopic.herokuapp.com/comments/`
 
-let localImage = '';
-let newComment = {
-  content: '',
-  "image_id": 1383
-};
 const imageEL = document.querySelector('#image');
 const imageNameEL = document.querySelector('#name');
 const imageLikesEL = document.querySelector('#likes');
@@ -20,18 +12,23 @@ const imageCommentsEL = document.querySelector('#comments');
 const imageLikeBTN = document.querySelector('#like_button');
 const form = document.querySelector('#comment_form');
 
-
+let imageId = '1383' //Enter the id from the fetched image here
+let localImage = '';
+let newComment = {
+  content: '',
+  "image_id": 1383
+};
 
 
 //GET remote
 const getImage = (imageURL) => {
-  return fetch('https://randopic.herokuapp.com/images/1383')
+  return fetch(`https://randopic.herokuapp.com/images/${imageId}`) //cound't get url with variable to work???
     .then(response => response.json())
 }
 
 //POST LIKE remote
 const updateLikeCount = (imageId) => {
-  return fetch(`https://randopic.herokuapp.com/likes`, {
+  return fetch(likeURL, {
     method: 'POST',
     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify({ image_id: imageId })
@@ -41,7 +38,7 @@ const updateLikeCount = (imageId) => {
 
 //POST COMMENT remote
 const updateComment = (imageId, content) => {
-  return fetch(`https://randopic.herokuapp.com/comments`, {
+  return fetch(commentsURL, {
     method: 'POST',
     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify({ image_id: imageId, content: content })
@@ -74,6 +71,7 @@ const renderComment = (comment) => {
   imageCommentsEL.appendChild(commentTAG);
 }
 
+
 imageLikeBTN.addEventListener('click', () => {
   localImage.like_count = localImage.like_count + 1;
   imageLikesEL.innerText = localImage.like_count;
@@ -83,10 +81,10 @@ imageLikeBTN.addEventListener('click', () => {
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  console.log('fomr')
+  // console.log('fomr')
 
   newComment.content = form.querySelector("input[name='comment']").value;
-  console.log(newComment.content);
+  // console.log(newComment.content);
   localImage.comments.push(newComment);
   renderComment(newComment);
   updateComment(imageId, newComment.content)
